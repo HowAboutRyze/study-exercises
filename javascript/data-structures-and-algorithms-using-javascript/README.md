@@ -241,15 +241,15 @@ function remove(element) {
    return false;
 }
 // 列表中有多少个元素
-function length () {
+function length() {
     return this.listSize;
 }
 // 显示列表中的元素
-function toString () {
+function toString() {
     return this.dataStore;
 }
 // 向列表中插入一个元素
-function insert (element, after) {
+function insert(element, after) {
     let insertPos = this.find(after);
     if (insertPos > -1) {
         this.dataStore.splice(insertPos + 1, 0, element);
@@ -259,13 +259,13 @@ function insert (element, after) {
     return false;
 }
 // 清空列表中所有的元素
-function clear () {
+function clear() {
     delete this.dataStore;
     this.dataStore.length = 0;
     this.listSize = this.pos = 0;
 }
 // 判断给定值是否在列表中
-function contains (element) {
+function contains(element) {
     for (let i = 0; i < this.dataStore.length; i++) {
         if (this.dataStore[i] === element) {
             return true;
@@ -274,33 +274,33 @@ function contains (element) {
     return false;
 }
 // 移动到列表中的第一个元素
-function front () {
+function front() {
     this.pos = 0;
 }
 // 移动到列表中的最后一个元素
-function end () {
+function end() {
     this.pos = this.listSize - 1;
 }
 // 向前移动一个单位
-function prev () {
+function prev() {
     --this.pos;
 }
 // 向后移动一个单位
-function next () {
+function next() {
     if (this.pos < this.listSize) {
         ++this.pos;
     }
 }
 // 显示当前位置
-function currPos () {
+function currPos() {
     return this.pos;
 }
 // 移动到指定位置
-function moveTo (position) {
+function moveTo(position) {
     this.pos = position;
 }
 // 获取当前元素
-function getElement () {
+function getElement() {
     return this.dataStore[this.pos];
 }
 ```
@@ -316,10 +316,10 @@ function getElement () {
 List.prototype.insertMax = function(element) {
 	let isNum = !isNaN(element);
 	for (let i = 0; i < this.dataStore.length; i++) {
-		if(isNum && !isNaN(this.dataStore[i]) && element < this.dataStore[i]) {
+		if(isNum && !isNaN(this.dataStore[i]) && element <= this.dataStore[i]) {
 			return false;
 		}
-		if(!isNum && isNaN(this.dataStore[i]) && this.dataStore[i].charCodeAt() && element.charCodeAt() < this.dataStore[i].charCodeAt()) {
+		if(!isNum && isNaN(this.dataStore[i]) && this.dataStore[i].charCodeAt() && element.charCodeAt() <= this.dataStore[i].charCodeAt()) {
 			return false;
 		}
 	}
@@ -344,6 +344,137 @@ testList.dataStore;  // ["h", "j", "d", 3, 5, 6, "s"]
 </details>
 
 ### 2.  增加一个向列表中插入元素的方法，该方法只在待插元素小于列表中的所有元素时才执 行插入操作。
-### 3.  创建 Person 类，该类用于保存人的姓名和性别信息。创建一个至少包含 10 个 Person 对 象的列表。写一个函数显示列表中所有拥有相同性别的人。
-### 4.  修改本章的影碟租赁程序，当一部影片检出后，将其加入一个已租影片列表。每当有客 户检出一部影片，都显示该列表中的内容。
-### 5.  为影碟租赁程序创建一个 check-in() 函数，当客户归还一部影片时，将该影片从已租列 表中删除，同时添加到现有影片列表中。
+
+<details><summary><b>my answer</b></summary>
+<p>
+
+``` js
+List.prototype.insertMin = function(element) {
+	let isNum = !isNaN(element);
+	for (let i = 0; i < this.dataStore.length; i++) {
+		if(isNum && !isNaN(this.dataStore[i]) && element >= this.dataStore[i]) {
+			return false;
+		}
+		if(!isNum && isNaN(this.dataStore[i]) && this.dataStore[i].charCodeAt() && element.charCodeAt() >= this.dataStore[i].charCodeAt()) {
+			return false;
+		}
+	}
+	this.append(element);
+	return true;
+}
+
+let testList = new List();
+testList.append(`h`);
+testList.append(`j`);
+testList.append(`d`);
+testList.append(3);
+testList.append(5);
+testList.insertMin(6);  // false
+testList.insertMin(3);  // false
+testList.insertMin(2);  // true
+testList.insertMin('s'); // false
+testList.insertMin('a');  // true
+testList.dataStore;  // ["h", "j", "d", 3, 5, 2, "a"]
+```
+
+</p>
+</details>
+
+### 3.  创建 Person 类，该类用于保存人的姓名和性别信息。创建一个至少包含 10 个 Person 对象的列表。写一个函数显示列表中所有拥有相同性别的人。
+
+<details><summary><b>my answer</b></summary>
+<p>
+
+``` js
+function Person() {
+	this.dataStore = [];
+	this.append = append;
+	this.showSameSex = showSameSex;
+}
+function append(name, sex) {
+	const people = { name, sex };
+	this.dataStore.push(people);
+}
+function showSameSex(sex) {
+	const sameSex = [];
+	const len = this.dataStore.length;
+	for(let i = 0; i < len; i++) {
+		if(this.dataStore[i].sex === sex) {
+			sameSex.push(this.dataStore[i].name);
+		}
+	}
+	return sameSex;
+}
+
+let per = new Person();
+per.append('李一','男');
+per.append('李二','女');
+per.append('李三','男');
+per.append('李四','男');
+per.append('李五','女');
+per.append('李六','男');
+per.append('李七','男');
+per.append('李八','男');
+per.append('李九','女');
+per.append('李十','女');
+per.showSameSex('男');  // ["李一", "李三", "李四", "李六", "李七", "李八"]
+per.showSameSex('女');  // ["李二", "李五", "李九", "李十"]
+```
+
+</p>
+</details>
+
+### 4.  修改本章的影碟租赁程序，当一部影片检出后，将其加入一个已租影片列表。每当有客户检出一部影片，都显示该列表中的内容。
+
+<details><summary><b>my answer</b></summary>
+<p>
+
+``` js
+function Customer(name, movie) {
+	this.name = name;
+	this.movie = movie;
+}
+function checkOut(name, movie, filmList, customerList, rentedList) {
+	if(filmList.contains(movie)) {
+		let c = new Customer(name, movie);
+		customerList.append(c);
+		filmList.remove(movie);
+		rentedList.append(movie);
+		console.log('已租：', rentedList.dataStore);
+	} else {
+		console.log(movie + 'is not available');
+	}
+}
+const movies = ['大鱼海棠', '大圣归来', '哪吒之魔童降世', '烈火英雄', '流浪地球', '扫毒', '追龙'];
+let movieList = new List();
+let customers = new List();
+let rentedList = new List();
+for(let i = 0; i < movies.length; ++i) {
+	movieList.append(movies[i]);
+}
+checkOut('李四', '大圣归来', movieList, customers, rentedList);  // 已租： ["大圣归来"]
+```
+
+</p>
+</details>
+
+### 5.  为影碟租赁程序创建一个 check-in() 函数，当客户归还一部影片时，将该影片从已租列表中删除，同时添加到现有影片列表中。
+
+<details><summary><b>my answer</b></summary>
+<p>
+
+``` js
+function checkIn(movie, filmList, rentedList) {
+	if(rentedList.contains(movie)) {
+		filmList.append(movie);
+		rentedList.remove(movie);
+		console.log('已还：', movie,'，已租列表：', rentedList.dataStore);
+	} else {
+		console.log(movie + 'is not rented');
+	}
+}
+checkIn('大圣归来', movieList, rentedList);  // 已还： 大圣归来 ，已租列表： []
+```
+
+</p>
+</details>
